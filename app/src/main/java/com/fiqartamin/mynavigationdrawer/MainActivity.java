@@ -3,6 +3,7 @@ package com.fiqartamin.mynavigationdrawer;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -32,7 +33,8 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         if (getSupportActionBar() != null) {
@@ -63,10 +65,20 @@ public class MainActivity extends AppCompatActivity
                 .load(profileImageUrl)
                 .into(profileCircleImageView);
 
+        /*
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
+        */
+
+        if (savedInstanceState == null) {
+            Fragment currentFragment = new HomeFragment();
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.content_main,currentFragment)
+                    .commit();
+        }
     }
 
     @Override
@@ -122,10 +134,25 @@ public class MainActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
+        Bundle bundle = new Bundle();
+        Fragment fragment = null;
+        String title = "";
 
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
+        if (id == R.id.nav_home){
+            title = "Home";
+            fragment = new HomeFragment();
+
+        }else if (id == R.id.nav_camera) {
+            title = "Camera";
+            fragment = new PageFragment();
+            bundle.putString(PageFragment.EXTRAS,"Camera");
+            fragment.setArguments(bundle);
+
         } else if (id == R.id.nav_gallery) {
+            title = "Gallery";
+            fragment = new PageFragment();
+            bundle.putString(PageFragment.EXTRAS,"Gallery");
+            fragment.setArguments(bundle);
 
         } else if (id == R.id.nav_slideshow) {
 
@@ -135,6 +162,17 @@ public class MainActivity extends AppCompatActivity
 
         } else if (id == R.id.nav_send) {
 
+        }
+
+        if (fragment != null){
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.content_main, fragment)
+                    .commit();
+        }
+
+        if (getSupportActionBar() != null){
+            getSupportActionBar().setTitle(title);
         }
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
